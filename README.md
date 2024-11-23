@@ -22,7 +22,7 @@ It therefor will only share its updates with Vigilator via an OnboardResource.
 -> a monitored resource that is onboard a server. It monitors the server itself as well as internal resources that might be running on the server.
 The onboard resource will send information updates to the monitor at a given interval.
 
-Resource are configured in the resource file which is a tabbed configuration file.
+Resources are configured in the resource file which is a tabbed configuration file.
 
 Example of a base resource file with one exposed resource
 ```
