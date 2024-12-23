@@ -10,7 +10,7 @@ TEST_CASE("process without monitored resource configuration, expecting exception
     MonitoredResourceReader monitoredresourcereader = MonitoredResourceReader();
     std::string exception;
     try {
-    //    monitoredresourcereader.process(monitoredResourceConfiguration);
+        monitoredresourcereader.process(monitoredResourceConfiguration);
     } catch(std::string ex) {
         exception = ex;
     }

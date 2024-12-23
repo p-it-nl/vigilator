@@ -184,6 +184,7 @@ void ExposedResource::validateItem(QString key, QJsonObject items, std::map<std:
     }
 }
 
+// FUTURE_WORK: use the one from conditon validator
 void ExposedResource::validateDatetimeCondition(MonitoredPart* part, QJsonObject statusEntry) {
     std::string datetimeCondition = part->getDatetimeCondition();
     if(!datetimeCondition.empty()) {

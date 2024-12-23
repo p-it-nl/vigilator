@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 #include "monitoredpart.h"
-#include <iostream>
 
 MonitoredPart::MonitoredPart() {}
 

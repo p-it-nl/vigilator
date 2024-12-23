@@ -20,7 +20,13 @@
 
 class ConditionValidator
 {
-
+    bool matchesIsNotCondition(int valueSize, int conditionSize, int positionInCondition, std::string value, std::string condition);
+    bool matchesIsEqualCondition(int valueSize, int conditionSize, int positionInCondition, std::string value, std::string condition);
+    bool matchesIsBiggerThenCondition(int valueSize, int conditionSize, std::string value, std::string condition);
+    bool matchesIsLessThenCondition(int valueSize, int conditionSize, std::string value, std::string condition);
+    bool matchesIsBeforeTheCondition(std::string value, int temporalAmount, std::string temporalType);
+    bool matchesIsAfterTheCondition(std::string value, int temporalAmount, std::string temporalType);
+    std::string trimFirstSpaceIfExists(std::string value);
 public:
     bool validate(std::string value, std::string condition);
 };
