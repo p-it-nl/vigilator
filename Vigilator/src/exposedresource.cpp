@@ -178,6 +178,8 @@ void ExposedResource::validateItem(QString key, QJsonObject items, std::map<std:
         std::string condition = validationItems[keyString];
         if(!condition.empty()) {
             // validate wtih condition validator
+
+            // if warning
         } else {
             // Not something the resource is interested in monitoring, skipping
         }
