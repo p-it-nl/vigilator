@@ -22,7 +22,7 @@ It therefor will only share its updates with Vigilator via an OnboardResource.
 -> a monitored resource that is onboard a server. It monitors the server itself as well as internal resources that might be running on the server.
 The onboard resource will send information updates to the monitor at a given interval.
 
-Resources are configured in the resource file which is a tabbed configuration file.
+Resource are configured in the resource file which is a tabbed configuration file.
 
 Example of a base resource file with one exposed resource
 ```
@@ -68,6 +68,32 @@ If the title cannot be found in the retrieved data (webpage), the resource is co
 The `MonitoredObjectName` can be any name. It is used to correlate with an object in the monitored data received. 
 It can contain items, each item is a condition that is validated against the value of the given key in the monitored data.
 The datetime object specifies the maximum age of the recieved data for the object, if the data exceeds the timelimit, the object is considered unhealthy.
+
+### Conditions
+
+Conditions specify when a resource is *unhealthy*, so configure the resources with conditions that represent an error / or warning state and not a healty state.
+Simple example, if you monitor that a database connection is available then the condition is configured to fail when it is not available becoming: `databaseAvailable: == false` or `databaseAvailable: !true`.
+
+The following condition types are available to configure conditions for a resource:
+- `==`, the value must be equal to | example: `== running` / `== 0`. The condition can be specified with or without a space after the sign, both `==value` and `== value` are valid conditions.
+- `!`, the value must not be equal to | example: `!ACTIVE` / `!10`. The sign is allowed to occur within the condition, resulting in a partial not equal validation for example: `pending transactions !0`.
+- `>`, the value is bigger then | example: `> 50`.
+- `<`, the value is less then | example: `< 40`.
+
+#### Types
+Some conditions can be combined with a type, mainly usable for temporal conditions.
+The following types are available:
+- `min`, specifies the value is of type minutes and can be used with the `>` and `<` signs | example: `< 5min` indicates the value must be less then 5 min old.
+- ... more coming
+
+Temportal types are mainly used to validate if the received data is recent.
+
+#### Priority
+
+When a condition is not urgent, the `W` can be added as the last character in the condition.
+This will make the condition result in a warning instead of a error. 
+
+For example: `threadsQueued: > 10 W` will result in a warning when the amount is above 10.
 
 ## Test Vigilator
 
