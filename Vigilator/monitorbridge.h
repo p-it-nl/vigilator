@@ -16,6 +16,7 @@
 #ifndef MONITORBRIDGE_H
 #define MONITORBRIDGE_H
 
+#include "notifier.h"
 #include "qcoreevent.h"
 #include <QBasicTimer>
 #include <QObject>
@@ -28,11 +29,13 @@ class MonitorBridge: public QObject
     Q_OBJECT
     QBasicTimer monitorTimer;
     Monitor* monitor;
+    Notifier* notifier;
     int count;
 
-    const int DEFAULT_UPDATE_FREQUENCY = 5;
+    const int DEFAULT_UPDATE_FREQUENCY = 20;
 
     void wait();
+    void validate();
 
 protected:
     void timerEvent(QTimerEvent *ev) override;

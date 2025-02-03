@@ -19,6 +19,7 @@
 #include "config.h"
 #include "monitoredpart.h"
 #include "monitoreddata.h"
+#include "conditionvalidator.h"
 #include <map>
 #include <deque>
 #include <string>
@@ -37,6 +38,7 @@ protected:
     bool healthy;
     std::vector<std::string> errors;
     std::vector<std::string> warnings;
+    ConditionValidator* conditionValidator;
 
     // FUTURE_WORK maybe this should be configurable
     // In order to limit the amount of memory used, monitored data stored on the heap should be limited

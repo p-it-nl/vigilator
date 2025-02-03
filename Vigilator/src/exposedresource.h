@@ -47,7 +47,7 @@ class ExposedResource: public MonitoredResource
     void validateMonitorReply(MonitoredData* repliedData);
     void validateWebReply(MonitoredData* repliedData);
     void handlePotentialError(std::string message, std::string value, std::string condition);
-    void validateItem(QString key, QJsonObject items, std::map<std::string, std::string> validationItems);
+    void validateItem(QString key, QJsonObject items, std::map<std::string, std::string> validationItems, std::string name);
     void validateDatetimeCondition(MonitoredPart* part, QJsonObject statusEntry);
 
 public:

@@ -16,12 +16,13 @@ add_executable(test
     config.cpp
     monitoredpart.cpp
  #   monitoredresource.cpp
-    monitoredresourceconfiguration.cpp
+ #   monitoredresourceconfiguration.cpp
  #   monitoredresourcereader.cpp
     conditionvalidator.cpp
     )
 
-target_link_libraries(test PRIVATE VigilatorCore Catch2::Catch2WithMain)
+target_link_libraries(test PRIVATE VigilatorCore
+    Catch2::Catch2WithMain)
 include(CTest)
 include(Catch)
 catch_discover_tests(test)

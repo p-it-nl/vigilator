@@ -18,15 +18,14 @@
 
 #include <QObject>
 
-//! [Qt Notifictaion Class]
 class Notifier : public QObject
 {
     Q_OBJECT
 public:
     explicit Notifier(QObject *parent = 0);
 
-    void setNotification(const QString &appName);
-    QString notification() const;
+    void setNotification(const std::string appName);
+    QString notify() const;
 
 signals:
     void notificationChanged();
@@ -35,7 +34,6 @@ private slots:
     void updateNotification();
 
 private:
-    QString m_notification;
+    QString notification;
 };
-//! [Qt Notification Class]
 #endif // NOTIFICATIONCLIENT_H

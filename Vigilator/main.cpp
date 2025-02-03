@@ -67,7 +67,9 @@ int main(int argc, char *argv[])
 
     int exit = app.exec();
 
-    std::cout << "exit code " << exit << std::endl;
+    std::cout << "quit" << std::endl;
+
+    delete workThread;
 
     return exit;
 }

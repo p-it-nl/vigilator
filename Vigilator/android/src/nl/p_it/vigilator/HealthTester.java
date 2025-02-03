@@ -33,7 +33,7 @@ public class HealthTester {
 
     public void test(final Context context) {
         try {
-            URL url = new URL("https://localhost:48/monitor");
+            URL url = new URL("https://manuelberoepskleding.nl/manuel-online/monitor");
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
 
@@ -56,7 +56,7 @@ public class HealthTester {
             }
 
             if (allMatches.size() != 8) {
-                NotificationClient.notify(context, "{Name} is failing health check");
+                NotificationClient.notify(context, "Manuel online is failing health check");
             }
 
             Log.i(TAG, "Result is ok");

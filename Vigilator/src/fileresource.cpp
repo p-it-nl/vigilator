@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 #include "fileresource.h"
-#include <filesystem>
-#include <iostream>
-#include <fstream>
+#include <qDebug>
+#include <qfile.h>
 
 FileResource::FileResource(std::string path)
 {
@@ -25,14 +24,16 @@ FileResource::FileResource(std::string path)
 
 void FileResource::read()
 {
-    std::ifstream file { path, std::ios::binary };
-    if (!file.good()) {
-        throw "File with path: " + path + " could not be read!";
+    QFile dfile(QString::fromStdString(path));
+    if (dfile.exists())
+    {
+        dfile.open(QIODevice::ReadOnly);
+        auto length { dfile.size() };
+        data = std::vector<std::byte>(length);
+        dfile.read( reinterpret_cast<char*>(data.data()), static_cast<long>(length));
+    } else {
+       throw path + " does not exist";
     }
-
-    auto length { std::filesystem::file_size(path) };
-    data = std::vector<std::byte>(length);
-    file.read( reinterpret_cast<char*>(data.data()), static_cast<long>(length));
 }
 
 void FileResource::clearData()

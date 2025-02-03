@@ -15,6 +15,8 @@
  */
 #include "monitorbridge.h"
 
+#include <notifier.h>
+
 MonitorBridge::MonitorBridge(QObject *parent) : QObject(parent)
 {
     count = 0;
@@ -22,8 +24,8 @@ MonitorBridge::MonitorBridge(QObject *parent) : QObject(parent)
 
     monitor = Monitor::getInstance();
     monitor->setUp(this);
+    notifier = new Notifier();
 }
-
 
 void MonitorBridge::timerEvent(QTimerEvent *ev)
 {
@@ -32,6 +34,8 @@ void MonitorBridge::timerEvent(QTimerEvent *ev)
 
     monitor->execute();
 
+    wait();
+    validate();
     wait();
 }
 
@@ -44,6 +48,24 @@ void MonitorBridge::wait()
         count++;
     } else {
         qDebug() << "waiting";
-        QThread::sleep(DEFAULT_UPDATE_FREQUENCY);
+        QThread::sleep(DEFAULT_UPDATE_FREQUENCY/2);
+    }
+}
+
+void MonitorBridge::validate() {
+    std::list<std::shared_ptr<MonitoredResource>> resources = monitor->getResources();
+    for(std::shared_ptr<MonitoredResource>& resource : resources) {
+        if(resource->isHealthy()) {
+            qDebug() << resource->getName() << " healthy";
+        } else {
+            qDebug() << resource->getName() << " unhealthy";
+        }
+
+        for(std::string error : resource->getErrors()) {
+            notifier->setNotification(resource->getName() + " " + error);
+        }
+        for(std::string warning : resource->getWarnings()) {
+            notifier->setNotification(resource->getName() + " " + warning);
+        }
     }
 }

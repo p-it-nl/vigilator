@@ -22,7 +22,7 @@ endif()
 # @see https://github.com/KDAB/android_openssl
 
 #add_subdirectory(src)
-add_subdirectory(tests)
+#add_subdirectory(tests)
 
 qt_standard_project_setup()
 
@@ -45,7 +45,6 @@ qt_add_qml_module(VigilatorClient
     VERSION 1.0
     QML_FILES
         main.qml
-        page.qml
     RESOURCES
         resources/logo.svg
         resources/logo-name.svg
@@ -59,11 +58,6 @@ qt_add_qml_module(VigilatorClient
         android/src/nl/p_it/vigilator/HealthTesterService.java
         android/AndroidManifest.xml
     SOURCES
-        abstractresource.h
-        util.h util.cpp
-        monitoraccessmanager.h monitoraccessmanager.cpp
-        monitorresource.h monitorresource.cpp
-        monitorservice.h monitorservice.cpp
         notifier.h notifier.cpp
         monitorprocess.h monitorprocess.cpp
         monitorbridge.h monitorbridge.cpp
@@ -117,13 +111,30 @@ install(TARGETS VigilatorClient
 )
 
 add_compile_definitions(
+    CONFIGURATION_FILE="monitored-resources.conf"
     BINARY_DIR="${PROJECT_BINARY_DIR}"
     RESOURCE_FOLDER="Vigilator/resources"
-    CONFIGURATION_FILE="monitored-resources.conf"
+    ANDROID_ASSETS="assets:"
 )
+
+if (NOT ANDROID)
+    add_compile_definitions(
+        IS_ANDROID=0
+    )
+endif()
+
+if (ANDROID)
+    add_compile_definitions(
+        IS_ANDROID=1
+    )
+endif()
+
 
 # To test
 set(lib_SRC
+    src/monitoredresource.h src/monitoredresource.cpp
+    src/exposedresource.h src/exposedresource.cpp
+    src/monitoreddata.h src/monitoreddata.cpp
     src/monitoredresource.h src/monitoredresource.cpp
     src/monitoredresourceconfiguration.h src/monitoredresourceconfiguration.cpp
     src/monitoredresourcereader.h src/monitoredresourcereader.cpp

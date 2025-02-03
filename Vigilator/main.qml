@@ -3,15 +3,93 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick
 
 import Vigilator
 
+import "." as App
+
 Window {
-    height: 640
+    height: 520
+    id: window
     title: qsTr("Vigilator")
     visible: true
-    width: 480
+    width: 360
+    color: "#ffffff"
 
+    ColumnLayout {
+        spacing: 0
+        anchors.fill: parent
+
+        RowLayout {
+            id: topbar
+            Layout.fillWidth: true
+            Layout.minimumHeight: 40
+            Layout.preferredHeight: 50
+            Layout.maximumHeight: 60
+
+            Image {
+                source: "resources/logo.svg"
+                Layout.fillWidth: false
+                Layout.minimumWidth: 30
+                Layout.preferredWidth: 40
+                Layout.maximumWidth: 50
+                Layout.minimumHeight: 30
+                Layout.preferredHeight: 40
+                Layout.maximumHeight: 50
+                Layout.margins: 10
+            }
+
+            Rectangle {
+                color: 'plum'
+                Layout.fillWidth: true
+                Layout.minimumWidth: 100
+                Layout.preferredWidth: 200
+                Layout.minimumHeight: topbar.Layout.minimumHeight
+                Layout.preferredHeight: topbar.Layout.preferredHeight
+                Layout.maximumHeight: topbar.Layout.maximumHeight
+            }
+        }
+
+        ColumnLayout {
+            anchors.top: topbar.bottom
+            Layout.fillWidth: true
+            id: resources
+
+            RowLayout {
+                Rectangle {
+                    color: "lightpink"
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 100
+                    Layout.preferredWidth: 200
+                    Layout.preferredHeight: 100
+                }
+            }
+
+            RowLayout {
+                Rectangle {
+                    color: "blue"
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 100
+                    Layout.preferredWidth: 200
+                    Layout.preferredHeight: 100
+                }
+            }
+
+            RowLayout {
+                Rectangle {
+                    color: "yellow"
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 100
+                    Layout.preferredWidth: 200
+                    Layout.preferredHeight: 100
+                }
+            }
+        }
+    }
+
+
+    /*
     Rectangle {
         color: "#ffffff"
         border.color: "#000000"
@@ -41,91 +119,40 @@ Window {
         }
     }
 
-    //Page {
-    //    id: page
-    //    anchors.fill: parent
-    //}
-
-    //! [MonitorService QML element]
-    MonitorService {
-        id: monitorService
-
-        MonitorResource {
-            id: manuel
-            path: "/manuel-online/monitor"
-        }
-
-    }
-    //! [MonitorService QML element]
-
-    Connections {
-        target: manuel
-        // Closes the URL selection popup once we have received data successfully
-        function onDataUpdated() {
-            fetchTester.stop()
-        }
-    }
-
     ColumnLayout {
+        Layout.minimumWidth: parent.width
         id: holder
-        spacing: 5
         y: header.height + 20;
-        x: 20
+        width: parent.width
+        spacing: 20
 
-        GridLayout {
-            id: urlSelectionLayout
-            columns: 2
-            columnSpacing: 5
-            rowSpacing: 5
-            Layout.fillWidth: true
-            enabled: !fetchTester.running
+        Frame {
+            width: parent.width
+            spacing: 20
 
-            Label {
-                id: url1TextArea
-                text: "https://manuelberoepskleding.nl"
-            }
-            Button {
-                text: qsTr("Use")
+            Column {
+                spacing: 80
+                width: parent.width
+                height: 100
+                x: 6
 
-                onClicked: fetchTester.update(url1TextArea.text)
-            }
-        }
-
-        Timer {
-            id: fetchTester
-            interval: 2000
-
-            function update(url) {
-                monitorService.url = url
-                manuel.refreshStatus()
-                start()
-            }
-        }
-
-        RowLayout {
-            id: fetchIndicator
-            Layout.fillWidth: true
-            visible: fetchTester.running
-
-            Label {
-                text: qsTr("Validating status")
-            }
-
-            BusyIndicator {
-                running: visible
-                Layout.fillWidth: true
-            }
-        }
-
-        RowLayout {
-            id: result
-            Layout.fillWidth: true
-            visible: !fetchTester.running
-
-            Label {
-                text: manuel.data
+                RadioButton {
+                    text: qsTr("First")
+                    checked: true
+                    width: parent.width
+                }
+                RadioButton {
+                    id: button
+                    text: qsTr("Second")
+                    width: parent.width
+                }
+                RadioButton {
+                    text: qsTr("Third")
+                    width: parent.width
+                }
             }
         }
     }
+    */
 }
 

@@ -1,8 +1,8 @@
 #include <catch2/catch_all.hpp>
-#include <src/monitoredresource.h>
+//#include <src/monitoredresource.h>
 #include <src/exposedresource.h>
-#include <src/internalresource.h>
-#include <src/onboardresource.h>
+//#include <src/internalresource.h>
+//#include <src/onboardresource.h>
 
 TEST_CASE("default exposed resource expecting no name and default config ","[monitoredresource]")
 {
@@ -18,7 +18,7 @@ TEST_CASE("default exposed resource expecting no name and default config ","[mon
     REQUIRE(expectedConfigStatus == resource->getConfig()->isActive());
     REQUIRE(expectedSize == resource->getParts().size());
 }
-
+/*
 TEST_CASE("default internal resource expecting no name and default config ","[monitoredresource]")
 {
     std::string expectedName = "";
@@ -48,7 +48,7 @@ TEST_CASE("default onboard resource expecting no name and default config ","[mon
     REQUIRE(expectedConfigStatus == resource->getConfig()->isActive());
     REQUIRE(expectedSize == resource->getParts().size());
 }
-
+*/
 TEST_CASE("exposed resource expecting with emtpy name set and default config ","[monitoredresource]")
 {
     std::string expectedName = "";

@@ -26,28 +26,22 @@ Notifier::Notifier(QObject *parent)
             this, &Notifier::updateNotification);
 }
 
-void Notifier::setNotification(const QString &appName)
+void Notifier::setNotification(const std::string message)
 {
-    if(m_notification == appName) {
-        return;
-    }
-
-    //! [notification changed signal]
-    m_notification = appName + " is kaduuk.";
+    notification = QString::fromStdString(message);
     emit notificationChanged();
-    //! [notification changed signal]
 }
 
-QString Notifier::notification() const
+QString Notifier::notify() const
 {
-    return m_notification;
+    return notification;
 }
 
 //! [Send notification message to Java]
 void Notifier::updateNotification()
 {
 #ifdef Q_OS_ANDROID
-    QJniObject javaNotification = QJniObject::fromString(m_notification);
+    QJniObject javaNotification = QJniObject::fromString(notification);
     QJniObject::callStaticMethod<void>(
         "nl/p_it/vigilator/NotificationClient",
         "notify",

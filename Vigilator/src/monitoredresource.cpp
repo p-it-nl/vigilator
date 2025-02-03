@@ -18,6 +18,7 @@
 MonitoredResource::MonitoredResource()
 {
     config = new Config();
+    conditionValidator = new ConditionValidator();
     healthy = false;
 }
 

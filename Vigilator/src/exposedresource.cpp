@@ -42,10 +42,6 @@ std::vector<std::string> ExposedResource::getWarnings()
 
 void ExposedResource::updateStatus()
 {
-    // TODO: can be a bit prettier then full reset here
-    healthy = true;
-    errors.clear();
-
     if(!resourceMonitorEndpoint.empty()) {
         retrieveUpdateFromResource(resourceMonitorEndpoint);
     } else {
@@ -65,7 +61,6 @@ void ExposedResource::updateStatus()
         // resource does not require web availability checks
     }
 
-
     finaliseUpdate();
 }
 
@@ -81,6 +76,11 @@ void ExposedResource::connectWithNetworkManager(QObject* caller)
 
 void ExposedResource::replyFinished(QNetworkReply* reply)
 {
+    // TODO: can be a bit prettier then full reset here
+    healthy = true;
+    errors.clear();
+    warnings.clear();
+
     std::string replyUrl = reply->url().toString().toStdString();
     if (reply->error()) {
         healthy = false;
@@ -132,7 +132,7 @@ void ExposedResource::validateMonitorReply(MonitoredData* repliedData)
                 std::map<std::string, std::string> validationItems = part->getItems();
                 QJsonObject items = statusEntry.value(KEY_JSON_ITEMS).toObject();
                 foreach (const QString key, items.keys()){
-                    validateItem(key, items, validationItems);
+                    validateItem(key, items, validationItems, name);
                 }
 
                 validateDatetimeCondition(part, statusEntry);
@@ -172,33 +172,31 @@ void ExposedResource::validateWebReply(MonitoredData* repliedData)
     }
 }
 
-void ExposedResource::validateItem(QString key, QJsonObject items, std::map<std::string, std::string> validationItems) {
+void ExposedResource::validateItem(QString key, QJsonObject items, std::map<std::string, std::string> validationItems, std::string name) {
     std::string keyString = key.toStdString();
     if(validationItems.find(keyString) != validationItems.end()) {
         std::string condition = validationItems[keyString];
         if(!condition.empty()) {
-            // validate wtih condition validator
-
-            // if warning
+            std::string value = items.value(key).toString().toStdString();
+            if(conditionValidator->validate(value, condition)) {
+                handlePotentialError(
+                    "Received value: " + value + " for '" + keyString + "' in entry: " + name + " indicating issues with the resource.",
+                   value, condition);
+            }
         } else {
             // Not something the resource is interested in monitoring, skipping
         }
     }
 }
 
-// FUTURE_WORK: use the one from conditon validator
 void ExposedResource::validateDatetimeCondition(MonitoredPart* part, QJsonObject statusEntry) {
     std::string datetimeCondition = part->getDatetimeCondition();
     if(!datetimeCondition.empty()) {
-        time_t datetimeLastUpdated = statusEntry.value(KEY_JSON_DATETIME).toDouble();
-
-        std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-        now += std::chrono::minutes(5);
-        time_t conditionLimit = std::chrono::system_clock::to_time_t(now);
-        if(datetimeLastUpdated > conditionLimit) {
+        std::string datetimeLastUpdated = statusEntry.value(KEY_JSON_DATETIME).toString().toStdString();
+        if(conditionValidator->validate(datetimeLastUpdated, datetimeCondition)) {
             handlePotentialError(
                 "Received update data exceeds specified time constraints in object " + name,
-                ctime(&datetimeLastUpdated), datetimeCondition);
+                datetimeLastUpdated, datetimeCondition);
         } else {
             // the update is timely
         }
@@ -208,7 +206,6 @@ void ExposedResource::validateDatetimeCondition(MonitoredPart* part, QJsonObject
 }
 
 void ExposedResource::handlePotentialError(std::string message, std::string value, std::string condition) {
-    std::cout << condition << std::endl;
     char endingChar = condition.at(condition.size()-1);
     if(WARNING_INDICATION == endingChar) {
         std::cout << "warning: " << message << std::endl;

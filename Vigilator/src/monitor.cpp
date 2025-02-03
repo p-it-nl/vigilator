@@ -16,17 +16,30 @@
 #include "exposedresource.h"
 #include "monitor.h"
 #include "monitoredresourcereader.h"
+#include <QDir>
 #include <filesystem>
 #include <iostream>
 
 void Monitor::setUp(QObject* caller)
 {
     std::string separator = {std::filesystem::path::preferred_separator};
-    std::string path = BINARY_DIR;
+    std::string path;
+
+    qDebug() << IS_ANDROID;
+
+#ifdef Q_OS_ANDROID
+    path.append(ANDROID_ASSETS);
+    path.append(separator);
+    path.append(CONFIGURATION_FILE);
+#else
+    path.append(BINARY_DIR);
     path.append(separator);
     path.append(RESOURCE_FOLDER);
     path.append(separator);
     path.append(CONFIGURATION_FILE);
+#endif
+
+    qDebug() << path;
 
     try {
         MonitoredResourceReader reader = MonitoredResourceReader();
@@ -40,9 +53,9 @@ void Monitor::setUp(QObject* caller)
             }
         }
     } catch(std::string e) {
-        std::cout << e << std::endl;
+         qDebug() << e;
     } catch(...) {
-        std::cout << "Unexpected exception occurred while reading config file" << std::endl;
+         qDebug() << "Unexpected exception occurred while reading config file";
     }
 }
 
