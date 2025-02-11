@@ -1,10 +1,6 @@
-pragma ComponentBehavior: Bound
-
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick
-
 import Vigilator
 
 import "." as App
@@ -19,7 +15,7 @@ Window {
 
     ColumnLayout {
         spacing: 0
-        anchors.fill: parent
+        Layout.fillWidth: true
 
         RowLayout {
             id: topbar
@@ -27,6 +23,7 @@ Window {
             Layout.minimumHeight: 40
             Layout.preferredHeight: 50
             Layout.maximumHeight: 60
+            Layout.preferredWidth: 360
 
             Image {
                 source: "resources/logo.svg"
@@ -51,40 +48,8 @@ Window {
             }
         }
 
-        ColumnLayout {
-            anchors.top: topbar.bottom
+        ResourcesList {
             Layout.fillWidth: true
-            id: resources
-
-            RowLayout {
-                Rectangle {
-                    color: "lightpink"
-                    Layout.fillWidth: true
-                    Layout.minimumWidth: 100
-                    Layout.preferredWidth: 200
-                    Layout.preferredHeight: 100
-                }
-            }
-
-            RowLayout {
-                Rectangle {
-                    color: "blue"
-                    Layout.fillWidth: true
-                    Layout.minimumWidth: 100
-                    Layout.preferredWidth: 200
-                    Layout.preferredHeight: 100
-                }
-            }
-
-            RowLayout {
-                Rectangle {
-                    color: "yellow"
-                    Layout.fillWidth: true
-                    Layout.minimumWidth: 100
-                    Layout.preferredWidth: 200
-                    Layout.preferredHeight: 100
-                }
-            }
         }
     }
 

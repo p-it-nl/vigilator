@@ -43,6 +43,8 @@ protected:
 public:
     explicit MonitorBridge(QObject *parent = {});
 
+signals:
+    void updateReady(const QString &result);
 };
 
 #endif // MONITORBRIDGE_H

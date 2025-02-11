@@ -30,6 +30,9 @@
 #ifdef Q_OS_ANDROID
 #include <QtCore/qjniobject.h>
 #endif
+#include <QQmlContext>
+#include "resourceslist.h"
+#include "resourceitemmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -39,9 +42,16 @@ int main(int argc, char *argv[])
     QGuiApplication::setOrganizationName("p-it");
     QIcon::setThemeName("vigilator");
 
+    qmlRegisterType<ResourceItemModel>("ResourceItem", 1, 0, "ResourceItemModel");
+    qmlRegisterUncreatableType<ResourcesList>("ResourceItem", 1, 0, "ResourcesList",
+                                              QStringLiteral("ResourcesList should not be created in QUML"));
+
+    ResourcesList resourcesList;
+
     qDebug() << "Device supports OpenSSL: " << QSslSocket::supportsSsl();
 
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty(QStringLiteral("resourcesList"), &resourcesList);
     const QUrl url(u"qrc:/Vigilator/main.qml"_qs);
     QObject::connect(
         &engine,
@@ -63,13 +73,15 @@ int main(int argc, char *argv[])
     MonitorBridge monitorBridge;
     MonitorProcess* workThread = new MonitorProcess();
     workThread->takeObject(&monitorBridge);
+    resourcesList.connect(&monitorBridge, &MonitorBridge::updateReady, &resourcesList, &ResourcesList::handleUpdate);
     workThread->start();
+
 
     int exit = app.exec();
 
     std::cout << "quit" << std::endl;
 
-    delete workThread;
+  // delete workThread;
 
     return exit;
 }

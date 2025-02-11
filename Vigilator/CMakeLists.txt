@@ -22,7 +22,7 @@ endif()
 # @see https://github.com/KDAB/android_openssl
 
 #add_subdirectory(src)
-#add_subdirectory(tests)
+add_subdirectory(tests)
 
 qt_standard_project_setup()
 
@@ -45,6 +45,7 @@ qt_add_qml_module(VigilatorClient
     VERSION 1.0
     QML_FILES
         main.qml
+        ResourcesList.qml
     RESOURCES
         resources/logo.svg
         resources/logo-name.svg
@@ -58,9 +59,11 @@ qt_add_qml_module(VigilatorClient
         android/src/nl/p_it/vigilator/HealthTesterService.java
         android/AndroidManifest.xml
     SOURCES
+        resourceitemmodel.h resourceitemmodel.cpp
         notifier.h notifier.cpp
         monitorprocess.h monitorprocess.cpp
         monitorbridge.h monitorbridge.cpp
+        resourceslist.h resourceslist.cpp
 
         src/monitoredresource.h src/monitoredresource.cpp
         src/monitor.h src/monitor.cpp

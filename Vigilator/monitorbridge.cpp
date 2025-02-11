@@ -68,4 +68,7 @@ void MonitorBridge::validate() {
             notifier->setNotification(resource->getName() + " " + warning);
         }
     }
+
+    emit updateReady("test");
 }
+
