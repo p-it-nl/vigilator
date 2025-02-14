@@ -3,7 +3,7 @@
 Vigilator is an multiplatform monitoring tool created with [QT](https://github.com/qt).
 
 Instead of a centralised monitoring solution Vigilator allows for monitoring from decentralised sources, anything from linux, windows, iOS and android device.
-Vigilator can be configured to monitoring any applicatie by allowing custom conditions and different types of resource types.
+Vigilator can be configured to monitoring any application by allowing custom conditions and different types of resource types.
 
 ## Configuring Vigilator.
 
