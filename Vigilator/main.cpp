@@ -33,6 +33,7 @@
 #include <QQmlContext>
 #include "resourceslist.h"
 #include "resourceitemmodel.h"
+#include <src/statusupdater.h>
 
 int main(int argc, char *argv[])
 {
@@ -42,17 +43,24 @@ int main(int argc, char *argv[])
     QGuiApplication::setOrganizationName("p-it");
     QIcon::setThemeName("vigilator");
 
-    qmlRegisterType<ResourceItemModel>("ResourceItem", 1, 0, "ResourceItemModel");
+    // Register types with QML (only needed if instantiated in QML)
     qmlRegisterUncreatableType<ResourcesList>("ResourceItem", 1, 0, "ResourcesList",
-                                              QStringLiteral("ResourcesList should not be created in QUML"));
+                                              QStringLiteral("ResourcesList should not be created in QML"));
 
+    // Instantiate backend objects
     ResourcesList resourcesList;
+    ResourceItemModel resourceModel;
+    resourceModel.setList(&resourcesList);  // If applicable
 
-    qDebug() << "Device supports OpenSSL: " << QSslSocket::supportsSsl();
+    qDebug() << "Device supports OpenSSL:" << QSslSocket::supportsSsl();
 
+    // Setup QML engine and context properties
     QQmlApplicationEngine engine;
-    engine.rootContext()->setContextProperty(QStringLiteral("resourcesList"), &resourcesList);
-    const QUrl url(u"qrc:/Vigilator/main.qml"_qs);
+    engine.rootContext()->setContextProperty("resourcesList", &resourcesList);
+    engine.rootContext()->setContextProperty("resourceModel", &resourceModel);
+
+    // Load QML
+    const QUrl url(u"qrc:/Vigilator/Main.qml"_qs);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,
@@ -70,12 +78,15 @@ int main(int argc, char *argv[])
         QNativeInterface::QAndroidApplication::context());
 #endif
 
+    StatusUpdater* statusUpdater = new StatusUpdater();
     MonitorBridge monitorBridge;
+    monitorBridge.connnectUpdater(statusUpdater);
     MonitorProcess* workThread = new MonitorProcess();
     workThread->takeObject(&monitorBridge);
-    resourcesList.connect(&monitorBridge, &MonitorBridge::updateReady, &resourcesList, &ResourcesList::handleUpdate);
+    workThread->takeObject(statusUpdater);
+    resourcesList.connect(statusUpdater, &StatusUpdater::updateReady, &resourcesList, &ResourcesList::handleUpdate);
+    workThread->connect(workThread, &MonitorProcess::started, &monitorBridge, &MonitorBridge::startTimer);
     workThread->start();
-
 
     int exit = app.exec();
 

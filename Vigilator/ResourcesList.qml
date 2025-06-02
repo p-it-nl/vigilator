@@ -12,40 +12,72 @@ ColumnLayout {
             anchors.fill: parent
             clip: true
             id: resources
-            implicitHeight: 250
-            implicitWidth: 250
+            implicitHeight: 350
+            implicitWidth: 350
+            model: resourceModel
 
-            model: ResourceItemModel {
-                list: resourcesList
-            }
+            delegate: Item {
+                width: ListView.view.width
+                height: 50
 
-            delegate: RowLayout {
-                width: parent.width
-
-                CheckBox {
-                    checked: model.done
-                    onClicked: model.done = checked
-
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        resourceModel.onItemClicked(index, model.name);
+                    }
                 }
-                TextField {
+
+                ColumnLayout {
                     Layout.fillWidth: true
-                    onEditingFinished: model.description = text
-                    text: model.description
+                    anchors.fill: parent
+                    RowLayout {
+                        state: model.state
+
+                        states: [
+                            State {
+                                name: "ok"
+                                PropertyChanges {
+                                    target: rowIcon
+                                    source: "resources/ok.svg"
+                                }
+                            },
+                            State {
+                                name: "warning"
+                                PropertyChanges {
+                                    target: rowIcon
+                                    source: "resources/warning.svg"
+                                }
+                            },
+                            State {
+                                name: "error"
+                                PropertyChanges {
+                                    target: rowIcon
+                                    source: "resources/error.svg"
+                                }
+                            }
+                        ]
+
+                        Image {
+                            id: rowIcon
+                            Layout.preferredWidth: 24
+                            Layout.preferredHeight: 24
+                            Layout.margins: 8
+                            source: "resources/ok.svg"
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: model.name
+                        }
+                    }
+
+                    Rectangle{
+                        Layout.fillWidth: true
+                        height: 1
+                        color: "#52443d"
+                    }
                 }
             }
-        }
-    }
-
-    RowLayout {
-        Button {
-            Layout.fillWidth: true
-            onClicked: resourcesList.appendItem()
-            text: qsTr("Add new item")
-        }
-        Button {
-            Layout.fillWidth: true
-            onClicked: resourcesList.removeCompletedItems()
-            text: qsTr("Remove completed")
         }
     }
 }

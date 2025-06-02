@@ -18,7 +18,6 @@
 #include "monitoredresourcereader.h"
 #include <QDir>
 #include <filesystem>
-#include <iostream>
 
 void Monitor::setUp(QObject* caller)
 {

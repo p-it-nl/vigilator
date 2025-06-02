@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include <catch2/catch_all.hpp>
-#include <src/config.h>
+#include <src/monitor/config.h>
 
 TEST_CASE("default config expecting not to be active and having no url","[config]")
 {

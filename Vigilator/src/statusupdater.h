@@ -13,16 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "monitorprocess.h"
-#include <error.h>
+#ifndef STATUSUPDATER_H
+#define STATUSUPDATER_H
 
-void MonitorProcess::takeObject(QObject* object) {
-    object->moveToThread(this);
-}
+#include "qnetworkaccessmanager.h"
+#include "resourcestatus.h"
 
-MonitorProcess::~MonitorProcess()
+class StatusUpdater: public QObject
 {
-    requestInterruption();
-    quit();
-    wait();
-}
+    Q_OBJECT
+    QNetworkAccessManager* manager;
+
+    const QString URL = "{url to vigilator node - or something similar}";
+
+public:
+    explicit StatusUpdater(QObject *parent = {});
+
+    void requestStatus();
+    void statusReceived(QNetworkReply* reply);
+
+    signals:
+        void updateReady(const QVector<ResourceStatus*> resourceStatusEntries);
+};
+
+#endif // STATUSUPDATER_H

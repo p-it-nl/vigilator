@@ -25,7 +25,7 @@ class MonitorProcess final : public QThread
     Q_OBJECT
 
 public:
-    void takeObject(QObject* monitorBridge);
+    void takeObject(QObject* statusUpdater);
 
     ~MonitorProcess() override;
 };

@@ -1,65 +1,75 @@
 #include "resourceslist.h"
 #include "qdebug.h"
 
+#include "src/resourcestatus.h"
+
 ResourcesList::ResourcesList(QObject *parent): QObject{parent}
 {
-    mItems.append({ true, QStringLiteral("Eat something")});
-    mItems.append({ false, QStringLiteral("Drink something")});
-    mItems.append({ false, QStringLiteral("Program something")});
 }
 
-QVector<ResourceItem> ResourcesList::items() const
+QMap<QString, ResourceStatus*> ResourcesList::getItems() const
 {
-    return mItems;
+    return items;
 }
 
-bool ResourcesList::setItemAt(int index, const ResourceItem &item)
+QVector<ResourceStatus*> ResourcesList::getSortedItems() const
 {
-    if(index < 0 || index >= mItems.size()) {
-        return false;
-    }
+    QVector<ResourceStatus*> sortedItems = QVector<ResourceStatus*>();
+    QVector<ResourceStatus*> endItems = QVector<ResourceStatus*>();
 
-    const ResourceItem &oldItem = mItems.at(index);
-    if(item.done == oldItem.done && item.description == oldItem.description) {
-        return false;
-    }
-
-    mItems[index] = item;
-
-    return true;
-}
-
-void ResourcesList::appendItem()
-{
-    emit preItemAppended();
-
-    ResourceItem item;
-    item.done = false;
-    mItems.append(item);
-
-    emit postItemAppended();
-}
-
-void ResourcesList::removeCompletedItems()
-{
-    for(int i = 0; i < mItems.size(); i++) {
-        if(mItems.at(i).done) {
-            emit preItemRemoved(i);
-
-            mItems.removeAt(i);
-
-            emit postItemRemoved();
+    foreach(ResourceStatus* statusEntry, items.values()) {
+        if(!statusEntry->isHealthy()) {
+            sortedItems.push_front(statusEntry);
+        } else if(!statusEntry->getWarnings().isEmpty()) {
+            sortedItems.push_back(statusEntry);
+        } else {
+            endItems.push_back(statusEntry);
         }
     }
+    foreach(ResourceStatus* endItem, endItems) {
+        sortedItems.push_back(endItem);
+    }
+
+    return sortedItems;
 }
 
-void ResourcesList::handleUpdate(const QString &result)
+void ResourcesList::updateItem(QString name, ResourceStatus* item)
 {
-    qDebug() << "<<--";
-    qDebug() << result;
-
-    appendItem();
-
+    if(items.contains(name)) {
+        items[name] = item;
+    }
 }
 
+void ResourcesList::appendItem(QString name, ResourceStatus* resourceStatus)
+{
+    items.insert(name, resourceStatus);
+}
 
+void ResourcesList::removeItem(QString name)
+{
+    if(items.contains(name)) {
+        items.remove(name);
+    }
+}
+
+void ResourcesList::handleUpdate(const QVector<ResourceStatus*> resourceStatusEntries)
+{
+    QVector<QString> touched = QVector<QString>();
+    foreach(ResourceStatus* statusEntry, resourceStatusEntries) {
+        QString name = statusEntry->getName();
+        if(items.contains(name)) {
+            updateItem(name, statusEntry);
+            touched.push_back(name);
+        } else {
+            appendItem(name, statusEntry);
+            touched.push_back(name);
+        }
+    }
+    foreach(QString key, items.keys()) {
+        if(!touched.contains(key)) {
+            removeItem(key);
+        }
+    }
+
+    emit itemsUpdated();
+}

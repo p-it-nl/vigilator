@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include <catch2/catch_all.hpp>
-#include <src/conditionvalidator.h>
+#include <src/monitor/conditionvalidator.h>
 
 TEST_CASE("no condition, resulting in false","[conditionvalidator]")
 {

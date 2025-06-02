@@ -20,7 +20,7 @@
 
 /**
  * @brief The InternalResource class is a monitored resource that is monitored internally on a server.
- * It is not available on the internet and only accesible on the server it is running on.
+ * It is not available on the internet and only accessible on the server it is running on.
  * It therefor will only share its updates with the monitor via an OnboardResource.
  * @see OnboardResource
  */

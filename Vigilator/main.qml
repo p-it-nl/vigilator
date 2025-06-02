@@ -6,42 +6,41 @@ import Vigilator
 import "." as App
 
 Window {
-    height: 520
+    height: 620
     id: window
     title: qsTr("Vigilator")
     visible: true
-    width: 360
+    width: 480
     color: "#ffffff"
 
     ColumnLayout {
-        spacing: 0
+        width: window.width
         Layout.fillWidth: true
 
         RowLayout {
             id: topbar
             Layout.fillWidth: true
+            Layout.leftMargin: 20
+            Layout.maximumHeight: 60
             Layout.minimumHeight: 40
             Layout.preferredHeight: 50
-            Layout.maximumHeight: 60
-            Layout.preferredWidth: 360
+            Layout.topMargin: 5
+            spacing: 20
 
             Image {
                 source: "resources/logo.svg"
                 Layout.fillWidth: false
+                Layout.maximumWidth: 50
                 Layout.minimumWidth: 30
                 Layout.preferredWidth: 40
-                Layout.maximumWidth: 50
+                Layout.maximumHeight: 50
                 Layout.minimumHeight: 30
                 Layout.preferredHeight: 40
-                Layout.maximumHeight: 50
-                Layout.margins: 10
             }
 
             Rectangle {
-                color: 'plum'
+                id: menu
                 Layout.fillWidth: true
-                Layout.minimumWidth: 100
-                Layout.preferredWidth: 200
                 Layout.minimumHeight: topbar.Layout.minimumHeight
                 Layout.preferredHeight: topbar.Layout.preferredHeight
                 Layout.maximumHeight: topbar.Layout.maximumHeight
@@ -52,72 +51,5 @@ Window {
             Layout.fillWidth: true
         }
     }
-
-
-    /*
-    Rectangle {
-        color: "#ffffff"
-        border.color: "#000000"
-        border.width: 1
-        id: header
-        width: parent.width
-        height: 52
-
-        Image {
-            fillMode: Image.Stretch
-            height: 40
-            id:  logo
-            source: "resources/logo.svg"
-            width: 40
-            x: 6
-            y: 6
-        }
-
-        Image {
-            fillMode: Image.Stretch
-            height: 32
-            id:  name
-            source: "resources/logo-name.svg"
-            width: 137
-            x: logo.x + 60;
-            y: logo.y + 6;
-        }
-    }
-
-    ColumnLayout {
-        Layout.minimumWidth: parent.width
-        id: holder
-        y: header.height + 20;
-        width: parent.width
-        spacing: 20
-
-        Frame {
-            width: parent.width
-            spacing: 20
-
-            Column {
-                spacing: 80
-                width: parent.width
-                height: 100
-                x: 6
-
-                RadioButton {
-                    text: qsTr("First")
-                    checked: true
-                    width: parent.width
-                }
-                RadioButton {
-                    id: button
-                    text: qsTr("Second")
-                    width: parent.width
-                }
-                RadioButton {
-                    text: qsTr("Third")
-                    width: parent.width
-                }
-            }
-        }
-    }
-    */
 }
 

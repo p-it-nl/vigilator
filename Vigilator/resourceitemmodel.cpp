@@ -2,103 +2,76 @@
 #include "resourceslist.h"
 
 ResourceItemModel::ResourceItemModel(QObject *parent)
-    : QAbstractListModel(parent), mList(nullptr)
+    : QAbstractListModel(parent), resourcesList(nullptr)
 {}
+
+void ResourceItemModel::onItemClicked(int index, const QString &name)
+{
+    qDebug() << "Item clicked at index:" << index << "name:" << name;
+    // Add your logic here
+}
 
 int ResourceItemModel::rowCount(const QModelIndex &parent) const
 {
-    // For list models only the root node (an invalid parent) should return the list's size. For all
-    // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
-    if (parent.isValid() || !mList)
+    if (parent.isValid() || !resourcesList)
         return 0;
 
-    return mList->items().size();
+    return resourcesList->getSortedItems().size();
 }
 
 QVariant ResourceItemModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || !mList)
+    if (!index.isValid() || !resourcesList)
         return QVariant();
 
-    const ResourceItem item = mList->items().at(index.row());
+    ResourceStatus* item = resourcesList->getSortedItems().at(index.row());
     switch(role) {
-    case DoneRole:
-        return QVariant(item.done);
-    case DescriptionRole:
-        return QVariant(item.description);
+    case HealthyRole:
+        return QVariant(item->isHealthy());
+    case NameRole:
+        return QVariant(item->getName());
+    case ErrorsRole:
+        return QVariant(item->getErrors());
+    case WarningsRole:
+        return QVariant(item->getWarnings());
+    case StateRole:
+        return QVariant(item->getState());
     }
 
     return QVariant();
 }
 
-bool ResourceItemModel::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-    if(!mList) {
-        return false;
-    }
-
-    ResourceItem item = mList->items().at(index.row());
-    switch(role) {
-    case DoneRole:
-        item.done = value.toBool();
-        break;
-    case DescriptionRole:
-        item.description = value.toString();
-        break;
-    }
-
-    if (mList->setItemAt(index.row(), item)) {
-        emit dataChanged(index, index, {role});
-        return true;
-    }
-    return false;
-}
-
-Qt::ItemFlags ResourceItemModel::flags(const QModelIndex &index) const
-{
-    if (!index.isValid())
-        return Qt::NoItemFlags;
-
-    return Qt::ItemIsEditable;
-}
-
 QHash<int, QByteArray> ResourceItemModel::roleNames() const
 {
-    QHash<int, QByteArray> names;
-    names[DoneRole] = "done";
-    names[DescriptionRole] = "description";
+    QHash<int, QByteArray> roles;
+    roles[HealthyRole] = "healthy";
+    roles[NameRole] = "name";
+    roles[ErrorsRole] = "errors";
+    roles[WarningsRole] = "warnings";
+    roles[StateRole] = "state";
 
-    return names;
+    return roles;
 }
 
 ResourcesList *ResourceItemModel::list() const
 {
-    return mList;
+    return resourcesList;
 }
 
-void ResourceItemModel::setList(ResourcesList *list)
+void ResourceItemModel::setList(ResourcesList* list)
 {
     beginResetModel();
 
-    if(mList) {
-        mList->disconnect(this);
+    if(resourcesList) {
+        resourcesList->disconnect(this);
     }
 
-    mList = list;
+    resourcesList = list;
 
-    if(mList) {
-        connect(mList, &ResourcesList::preItemAppended, this, [=]() {
-            const int index = mList->items().size();
-            beginInsertRows(QModelIndex(), index, index);
-        });
-        connect(mList, &ResourcesList::postItemAppended, this, [=]() {
-            endInsertRows();
-        });
-        connect(mList, &ResourcesList::preItemRemoved, this, [=](int index) {
-            beginRemoveRows(QModelIndex(), index, index);
-        });
-        connect(mList, &ResourcesList::postItemRemoved, this, [=]() {
-            endRemoveRows();
+    if(resourcesList) {
+        connect(resourcesList, &ResourcesList::itemsUpdated, this, [=]() {
+            beginResetModel();
+            endResetModel();
         });
     }
 

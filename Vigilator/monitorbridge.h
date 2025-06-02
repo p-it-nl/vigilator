@@ -22,17 +22,18 @@
 #include <QObject>
 #include <qnetworkaccessmanager.h>
 #include <qthread.h>
-#include <src/monitor.h>
+#include "src/monitor/monitor.h"
+#include "src/statusupdater.h"
 
 class MonitorBridge: public QObject
 {
     Q_OBJECT
-    QBasicTimer monitorTimer;
-    Monitor* monitor;
+    QBasicTimer updateTimer;
+    StatusUpdater* updater;
     Notifier* notifier;
     int count;
 
-    const int DEFAULT_UPDATE_FREQUENCY = 20;
+    const int DEFAULT_UPDATE_FREQUENCY = 10;
 
     void wait();
     void validate();
@@ -43,8 +44,11 @@ protected:
 public:
     explicit MonitorBridge(QObject *parent = {});
 
-signals:
-    void updateReady(const QString &result);
+    void connnectUpdater(StatusUpdater* statusUpdater);
+
+public slots:
+    void startTimer();
+
 };
 
 #endif // MONITORBRIDGE_H

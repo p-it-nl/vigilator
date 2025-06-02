@@ -3,36 +3,26 @@
 
 #include <QObject>
 #include <QVector>
-
-struct ResourceItem
-{
-    bool done;
-    QString description;
-};
+#include "src/resourcestatus.h"
 
 class ResourcesList : public QObject
 {
     Q_OBJECT
-    QVector<ResourceItem> mItems;
+    QMap<QString, ResourceStatus*> items;
 
 public:
     explicit ResourcesList(QObject *parent = nullptr);
 
-    QVector<ResourceItem> items() const;
+    QMap<QString, ResourceStatus*> getItems() const;
+    QVector<ResourceStatus*> getSortedItems() const;
 
-    bool setItemAt(int index, const ResourceItem &item);
-
-public slots:
-    void appendItem();
-    void removeCompletedItems();
-    void handleUpdate(const QString &result);
+    void updateItem(QString name, ResourceStatus* item);
+    void appendItem(QString name, ResourceStatus* resourceStatus);
+    void removeItem(QString name);
+    void handleUpdate(const QVector<ResourceStatus*> resourceStatusEntries);
 
 signals:
-    void preItemAppended();
-    void postItemAppended();
-
-    void preItemRemoved(int index);
-    void postItemRemoved();
+    void itemsUpdated();
 };
 
 #endif // RESOURCESLIST_H

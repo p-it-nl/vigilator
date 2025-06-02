@@ -1,4 +1,4 @@
-#include "src/monitoredpart.h"
+#include "src/monitor/monitoredpart.h"
 #include <catch2/catch_all.hpp>
 
 TEST_CASE("default monitoredpart expecting no items and no datetime condition","[monitoredpart]")

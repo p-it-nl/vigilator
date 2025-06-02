@@ -15,33 +15,26 @@
  */
 #include "monitorbridge.h"
 
-#include <notifier.h>
+#include "notifier.h"
 
 MonitorBridge::MonitorBridge(QObject *parent) : QObject(parent)
 {
     count = 0;
-    monitorTimer.start(0, this);
-
-    monitor = Monitor::getInstance();
-    monitor->setUp(this);
     notifier = new Notifier();
 }
 
 void MonitorBridge::timerEvent(QTimerEvent *ev)
 {
-    if (ev->timerId() != monitorTimer.timerId())
+    if (ev->timerId() != updateTimer.timerId())
         return;
 
-    monitor->execute();
-
-    wait();
-    validate();
+    updater->requestStatus();
     wait();
 }
 
 void MonitorBridge::wait()
 {
-    // TODO: For somereason the QNetworkAccessManager does not reply the first two `get`s but will respond with the third and subsequent `get`s
+    // TODO: incombination with the sleep the QNetworkAccessManager does not reply the first two `get`s but will respond with the third and subsequent `get`s
     if(count < 2) {
         qDebug() << "winding up...";
         QThread::sleep(1);
@@ -52,23 +45,14 @@ void MonitorBridge::wait()
     }
 }
 
-void MonitorBridge::validate() {
-    std::list<std::shared_ptr<MonitoredResource>> resources = monitor->getResources();
-    for(std::shared_ptr<MonitoredResource>& resource : resources) {
-        if(resource->isHealthy()) {
-            qDebug() << resource->getName() << " healthy";
-        } else {
-            qDebug() << resource->getName() << " unhealthy";
-        }
-
-        for(std::string error : resource->getErrors()) {
-            notifier->setNotification(resource->getName() + " " + error);
-        }
-        for(std::string warning : resource->getWarnings()) {
-            notifier->setNotification(resource->getName() + " " + warning);
-        }
-    }
-
-    emit updateReady("test");
+void MonitorBridge::connnectUpdater(StatusUpdater* updater)
+{
+    this->updater = updater;
 }
 
+void MonitorBridge::startTimer()
+{
+    qDebug() << "start timer";
+
+    updateTimer.start(0, this);
+}

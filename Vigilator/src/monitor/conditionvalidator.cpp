@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 #include "conditionvalidator.h"
+
 #include <chrono>
 #include <stdexcept>
 
 bool ConditionValidator::validate(std::string value, std::string condition) {
     if(!condition.empty()) {
-        bool isValid;
         int valueSize = value.size();
         int conditionSize = condition.size();
         int conditionStart = std::isspace(condition[0]) ? 1 : 0;
@@ -42,7 +42,7 @@ bool ConditionValidator::validate(std::string value, std::string condition) {
             break;
         default:
             std::size_t positionIsNotCondition = condition.find('!');
-            if(positionIsNotCondition != std::string::npos) {
+            if(std::string::npos != positionIsNotCondition) {
                 return matchesIsNotCondition(valueSize, conditionSize, static_cast<int>(positionIsNotCondition),  value, condition);
             }
             break;
@@ -60,11 +60,7 @@ bool ConditionValidator::matchesIsNotCondition(int valueSize, int conditionSize,
     std::string valueToMatch = value.substr(positionInCondition, valueSize);
     std::string conditionToMatch = condition.substr((positionInCondition+1), conditionSize);
 
-    if(valueToMatch == conditionToMatch) {
-        return false;
-    } else {
-        return true;
-    }
+    return valueToMatch != conditionToMatch;
 }
 
 bool ConditionValidator::matchesIsEqualCondition(int valueSize, int conditionSize, int positionInCondition, std::string value, std::string condition) {
@@ -75,11 +71,8 @@ bool ConditionValidator::matchesIsEqualCondition(int valueSize, int conditionSiz
     std::string valueToMatch = value.substr(positionInCondition, valueSize);
     std::string conditionToMatch = condition.substr((positionInCondition+2), conditionSize);
     conditionToMatch = trimFirstSpaceIfExists(conditionToMatch);
-    if(valueToMatch == conditionToMatch) {
-        return true;
-    } else {
-        return false;
-    }
+
+    return valueToMatch == conditionToMatch;
 }
 
 bool ConditionValidator::matchesValueCondition(int valueSize, int conditionSize, std::string value, std::string condition, ConditionType type)
@@ -93,7 +86,7 @@ bool ConditionValidator::matchesValueCondition(int valueSize, int conditionSize,
     conditionToMatch = trimFirstSpaceIfExists(conditionToMatch);
     try {
         std::size_t temportalMinutesPosition = condition.find("min");
-        if(temportalMinutesPosition != std::string::npos) {
+        if(std::string::npos != temportalMinutesPosition) {
             int startPositionTemporalIndicator = static_cast<int>(temportalMinutesPosition);
             std::string temporalAmountString = condition.substr(0, startPositionTemporalIndicator);
             temporalAmountString = temporalAmountString.substr(1);
@@ -102,7 +95,7 @@ bool ConditionValidator::matchesValueCondition(int valueSize, int conditionSize,
 
             std::string temporalType = condition.substr(startPositionTemporalIndicator, conditionSize);
 
-            if(type == BIGGER) {
+            if(BIGGER == type) {
                 return matchesDateCondition(value, temporalAmount, temporalType, AFTER);
             } else {
                 return matchesDateCondition(value, temporalAmount, temporalType, BEFORE);
@@ -111,12 +104,10 @@ bool ConditionValidator::matchesValueCondition(int valueSize, int conditionSize,
             int parsedValue = std::stoi(valueToMatch);
             int parsedCondition = std::stoi(conditionToMatch);
 
-            if(type == BIGGER && parsedValue > parsedCondition) {
-                return true;
-            } else if(type == SMALLER && parsedValue < parsedCondition) {
-                return true;
+            if(BIGGER == type) {
+                return parsedValue > parsedCondition;
             } else {
-                return false;
+                return parsedValue < parsedCondition;
             }
         }
     } catch(std::invalid_argument &e){
@@ -130,16 +121,14 @@ bool ConditionValidator::matchesDateCondition(std::string value, int temporalAmo
 {
     try {
         time_t datetimeValue = std::stol(value);
-        if(datetimeValue > 1000000000) {
+        if(1000000000 < datetimeValue) {
             std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
             now += std::chrono::minutes(temporalAmount);
             time_t conditionLimit = std::chrono::system_clock::to_time_t(now);
-            if(type == BEFORE && datetimeValue < conditionLimit) {
-                return true;
-            } else if(type == AFTER && datetimeValue > conditionLimit) {
-                return true;
+            if(BEFORE == type) {
+                return datetimeValue < conditionLimit;
             } else {
-                return false;
+                return datetimeValue > conditionLimit;
             }
         } else {
             // not a valid timestamp format
